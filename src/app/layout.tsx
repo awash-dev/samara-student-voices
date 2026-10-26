@@ -110,6 +110,9 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
+  verification: {
+    google: "YS4F_lYJ4egYwccTomcTh98KG9oDMNfLrFbHLcUjyLc",
+  },
   other: {
     "university:name": "Samara University",
     "university:abbreviation": "SU",
