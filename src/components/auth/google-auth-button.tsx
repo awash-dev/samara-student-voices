@@ -18,11 +18,9 @@ type GoogleAuthButtonProps = {
 }
 
 function getCallbackUrls() {
-  const origin =
-    typeof window !== "undefined" ? window.location.origin : ""
   return {
-    callbackURL: `${origin}/auth/callback`,
-    errorCallbackURL: `${origin}/auth/sign-in?error=google`,
+    callbackURL: "/auth/callback",
+    errorCallbackURL: "/auth/sign-in?error=google",
   }
 }
 
