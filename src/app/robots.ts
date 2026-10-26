@@ -11,7 +11,15 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: ["/", "/privacy", "/auth/sign-in", "/auth/sign-up", "/pending-approval"],
+        allow: [
+          "/",
+          "/privacy",
+          "/auth/sign-in",
+          "/auth/sign-up",
+          "/auth/forgot-password",
+          "/auth/reset-password",
+          "/pending-approval",
+        ],
         disallow: [
           "/dashboard/*",
           "/executive/*",
