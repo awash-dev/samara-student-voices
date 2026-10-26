@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import Link from "next/link"
 
 import { SiteFooter } from "@/components/layout/site-footer"
@@ -6,6 +7,12 @@ import { CookieSettingsButton } from "@/components/privacy/cookie-settings-butto
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { SITE } from "@/lib/marketing/content"
+
+export const metadata: Metadata = {
+  title: "Privacy Policy & Zero-Knowledge Guarantee — Samara Student Voices",
+  description:
+    "Learn how Samara Student Voices protects student confidentiality, prevents retaliation, and strips identifying data.",
+}
 
 export default function PrivacyPage() {
   return (
