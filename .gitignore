@@ -45,6 +45,7 @@ yarn-error.log*
 user.text
 user.txt
 save-users.mjs
+ID_*.png
 
 # vercel
 .vercel

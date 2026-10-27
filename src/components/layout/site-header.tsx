@@ -1,8 +1,9 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useState } from "react"
-import { ArrowRight, Menu, PhoneCall, Shield, ShieldAlert, X } from "lucide-react"
+import { ArrowRight, Menu, PhoneCall, ShieldAlert, X } from "lucide-react"
 
 import { EMERGENCY_CONTACTS, NAV_LINKS, SITE } from "@/lib/marketing/content"
 import { cn } from "@/lib/utils"
@@ -40,8 +41,15 @@ export function SiteHeader() {
             className="flex min-w-0 items-center gap-2 sm:gap-2.5 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
             aria-label={`${SITE.name} — home`}
           >
-            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <Shield className="size-4" aria-hidden="true" />
+            <div className="relative flex size-8.5 shrink-0 items-center justify-center overflow-hidden rounded-full ring-1 ring-border shadow-xs bg-background">
+              <Image
+                src="/logo.png"
+                alt={`${SITE.name} logo`}
+                width={34}
+                height={34}
+                priority
+                className="size-full object-cover"
+              />
             </div>
             <div className="flex min-w-0 flex-col leading-tight">
               <span className="truncate text-sm font-bold tracking-tight text-foreground">

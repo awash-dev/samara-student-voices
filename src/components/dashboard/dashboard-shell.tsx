@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { type ReactNode } from "react"
 import { LogOut, Shield, User as UserIcon } from "lucide-react"
@@ -268,9 +269,9 @@ export function DashboardShell({
             "dashboard-canvas relative flex min-h-0 min-w-0 flex-1 flex-col scrollbar-none",
             fullBleed
               ? cn(
-                  "overflow-hidden",
-                  hideMobileNav ? "pb-0" : "pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-0"
-                )
+                "overflow-hidden",
+                hideMobileNav ? "pb-0" : "pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-0"
+              )
               : "overflow-y-auto overscroll-contain scroll-pb-24 p-3 pb-[calc(7rem+env(safe-area-inset-bottom))] sm:p-6 md:pb-24"
           )}
         >

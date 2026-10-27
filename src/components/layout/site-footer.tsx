@@ -1,5 +1,5 @@
+import Image from "next/image"
 import Link from "next/link"
-import { Shield } from "lucide-react"
 
 import { CREDITS, SITE } from "@/lib/marketing/content"
 import { cn } from "@/lib/utils"
@@ -16,10 +16,18 @@ export function SiteFooter() {
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 rounded-md outline-none transition-opacity hover:opacity-90 focus-visible:ring-3 focus-visible:ring-primary-foreground/30"
+            className="inline-flex items-center gap-2.5 rounded-md outline-none transition-opacity hover:opacity-90 focus-visible:ring-3 focus-visible:ring-primary-foreground/30"
             aria-label={`${SITE.name} — home`}
           >
-            <Shield className="size-4" aria-hidden="true" />
+            <div className="relative flex size-7 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white ring-1 ring-white/30">
+              <Image
+                src="/logo.png"
+                alt={`${SITE.name} logo`}
+                width={28}
+                height={28}
+                className="size-full object-cover"
+              />
+            </div>
             <span className="text-sm font-semibold">{SITE.shortName}</span>
           </Link>
 
