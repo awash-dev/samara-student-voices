@@ -62,9 +62,6 @@ export async function proxy(request: NextRequest) {
 
   // 4. Protected Routes: Check user cookies
   const role = parseRoleCookie(request.cookies.get('user_role')?.value)
-  const approved = parseApprovedCookie(
-    request.cookies.get('user_approved')?.value
-  )
   const sessionToken =
     request.cookies.get('better-auth.session_token')?.value ||
     request.cookies.get('__Secure-better-auth.session_token')?.value ||
@@ -85,32 +82,27 @@ export async function proxy(request: NextRequest) {
     return res
   }
 
-  // If role cookie is present, enforce approval & role-based access
-  if (role) {
-    if (!approved) {
-      return NextResponse.redirect(new URL('/pending-approval', request.url))
+  // Enforce role-based boundaries on page routes:
+  // Notice: We let the server component verify fresh approval status from the database,
+  // ensuring students and executives can access their dashboards immediately once approved
+  // without being blocked by stale client cookies.
+  if (role && !pathname.startsWith('/api/')) {
+    const isExecutivePath = pathname.startsWith('/executive')
+    const isAdminPath = pathname.startsWith('/admin')
+    const isSuperadminPath = pathname.startsWith('/superadmin')
+
+    if (role === 'student' && (isExecutivePath || isAdminPath || isSuperadminPath)) {
+      return NextResponse.redirect(new URL('/dashboard', request.url))
     }
-
-    if (!pathname.startsWith('/api/')) {
-      const isExecutivePath = pathname.startsWith('/executive')
-      const isAdminPath = pathname.startsWith('/admin')
-      const isSuperadminPath = pathname.startsWith('/superadmin')
-
-      if (role === 'student' && (isExecutivePath || isAdminPath || isSuperadminPath)) {
-        return NextResponse.redirect(new URL('/dashboard', request.url))
-      }
-      if (role === 'executive' && (isAdminPath || isSuperadminPath)) {
-        return NextResponse.redirect(new URL('/executive', request.url))
-      }
-      if (role === 'admin' && isSuperadminPath) {
-        return NextResponse.redirect(new URL('/admin', request.url))
-      }
+    if (role === 'executive' && (isAdminPath || isSuperadminPath)) {
+      return NextResponse.redirect(new URL('/executive', request.url))
     }
-
-    return NextResponse.next()
+    if (role === 'admin' && isSuperadminPath) {
+      return NextResponse.redirect(new URL('/admin', request.url))
+    }
   }
 
-  // Session token exists; let downstream page/route handler verify full DB session
+  // Session token exists; downstream page/route handler verifies full DB session & approval
   return NextResponse.next()
 }
 
@@ -122,4 +114,3 @@ export const config = {
     '/((?!_next/static|_next/image|favicon.ico|public/).*)',
   ],
 }
-

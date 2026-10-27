@@ -9,6 +9,7 @@ import {
   RefreshCw,
   Trash2,
   UserCog,
+  UserPlus,
 } from "lucide-react"
 
 import { ToastBanner } from "@/components/dashboard/toast-banner"
@@ -69,10 +70,18 @@ export function AdminUsersPanel({ fullAccess = false }: AdminUsersPanelProps) {
   const [editUser, setEditUser] = useState<ManagedUser | null>(null)
   const [passwordUser, setPasswordUser] = useState<ManagedUser | null>(null)
   const [customPassword, setCustomPassword] = useState("")
+  const [createUserOpen, setCreateUserOpen] = useState(false)
+  const [createForm, setCreateForm] = useState({
+    name: "",
+    email: "",
+    role: "student" as ManagedUser["role"],
+    password: "",
+    approved: true,
+  })
   const [editForm, setEditForm] = useState({
     name: "",
     email: "",
-    role: "student" as "student" | "executive",
+    role: "student" as ManagedUser["role"],
     approved: true,
   })
   const [busy, setBusy] = useState(false)
@@ -136,7 +145,7 @@ export function AdminUsersPanel({ fullAccess = false }: AdminUsersPanelProps) {
     setEditForm({
       name: user.name ?? "",
       email: user.email,
-      role: user.role === "executive" ? "executive" : "student",
+      role: user.role,
       approved: user.approved,
     })
   }
@@ -220,6 +229,44 @@ export function AdminUsersPanel({ fullAccess = false }: AdminUsersPanelProps) {
     }
   }
 
+  const handleCreateUser = async () => {
+    if (!createForm.email || !createForm.password) {
+      showToast("error", "Email and password are required")
+      return
+    }
+    if (createForm.password.length < 8) {
+      showToast("error", "Password must be at least 8 characters")
+      return
+    }
+    setBusy(true)
+    try {
+      const res = await fetch("/api/admin/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(createForm),
+      })
+      const data = await res.json()
+      if (res.ok) {
+        showToast("success", "User registered successfully")
+        setCreateUserOpen(false)
+        setCreateForm({
+          name: "",
+          email: "",
+          role: "student",
+          password: "",
+          approved: true,
+        })
+        void fetchUsers()
+      } else {
+        showToast("error", data.error || "Failed to register user")
+      }
+    } catch {
+      showToast("error", "Network error")
+    } finally {
+      setBusy(false)
+    }
+  }
+
   return (
     <div className="w-full space-y-6">
       {toast ? <ToastBanner type={toast.type} message={toast.text} /> : null}
@@ -270,6 +317,15 @@ export function AdminUsersPanel({ fullAccess = false }: AdminUsersPanelProps) {
           >
             <Download className="size-4" aria-hidden="true" />
             Save user.txt
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            onClick={() => setCreateUserOpen(true)}
+            className="col-span-2 w-full sm:col-span-1 sm:w-auto gap-1.5"
+          >
+            <UserPlus className="size-4" aria-hidden="true" />
+            Register User
           </Button>
         </div>
       </div>
@@ -472,7 +528,7 @@ export function AdminUsersPanel({ fullAccess = false }: AdminUsersPanelProps) {
                 onValueChange={(v) =>
                   setEditForm((f) => ({
                     ...f,
-                    role: v as "student" | "executive",
+                    role: v as ManagedUser["role"],
                   }))
                 }
               >
@@ -482,6 +538,12 @@ export function AdminUsersPanel({ fullAccess = false }: AdminUsersPanelProps) {
                 <SelectContent>
                   <SelectItem value="student">{ROLE_LABELS.student}</SelectItem>
                   <SelectItem value="executive">{ROLE_LABELS.executive}</SelectItem>
+                  {fullAccess ? (
+                    <>
+                      <SelectItem value="admin">{ROLE_LABELS.admin}</SelectItem>
+                      <SelectItem value="superadmin">{ROLE_LABELS.superadmin}</SelectItem>
+                    </>
+                  ) : null}
                 </SelectContent>
               </Select>
             </div>
@@ -515,6 +577,8 @@ export function AdminUsersPanel({ fullAccess = false }: AdminUsersPanelProps) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      
 
       <Dialog
         open={!!passwordUser}
@@ -567,6 +631,127 @@ export function AdminUsersPanel({ fullAccess = false }: AdminUsersPanelProps) {
                 <Loader2 className="size-4 animate-spin" aria-hidden="true" />
               ) : null}
               {copy.setPasswordLabel}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={createUserOpen}
+        onOpenChange={(o) => {
+          if (!busy) setCreateUserOpen(o)
+        }}
+      >
+        <DialogContent className="sm:max-w-[480px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <UserPlus className="size-5 text-primary" aria-hidden="true" />
+              Register New User
+            </DialogTitle>
+            <DialogDescription>
+              Create a new user account with login credentials and assigned system role.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="create-name">Full Name</Label>
+              <Input
+                id="create-name"
+                placeholder="e.g. Abebe Bikila"
+                value={createForm.name}
+                onChange={(e) =>
+                  setCreateForm((f) => ({ ...f, name: e.target.value }))
+                }
+                disabled={busy}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="create-email">University / Official Email *</Label>
+              <Input
+                id="create-email"
+                type="email"
+                placeholder="e.g. su1701862@samu.edu.et"
+                value={createForm.email}
+                onChange={(e) =>
+                  setCreateForm((f) => ({ ...f, email: e.target.value }))
+                }
+                disabled={busy}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="create-password">Initial Password (min 8 characters) *</Label>
+              <Input
+                id="create-password"
+                type="password"
+                placeholder="••••••••"
+                value={createForm.password}
+                onChange={(e) =>
+                  setCreateForm((f) => ({ ...f, password: e.target.value }))
+                }
+                disabled={busy}
+                autoComplete="new-password"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>System Role</Label>
+              <Select
+                value={createForm.role}
+                onValueChange={(v) =>
+                  setCreateForm((f) => ({
+                    ...f,
+                    role: v as ManagedUser["role"],
+                  }))
+                }
+                disabled={busy}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="student">{ROLE_LABELS.student}</SelectItem>
+                  <SelectItem value="executive">{ROLE_LABELS.executive}</SelectItem>
+                  {fullAccess ? (
+                    <>
+                      <SelectItem value="admin">{ROLE_LABELS.admin}</SelectItem>
+                      <SelectItem value="superadmin">{ROLE_LABELS.superadmin}</SelectItem>
+                    </>
+                  ) : null}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="pt-2">
+              <label className="flex items-center gap-2.5 text-sm font-medium cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={createForm.approved}
+                  onChange={(e) =>
+                    setCreateForm((f) => ({ ...f, approved: e.target.checked }))
+                  }
+                  disabled={busy}
+                  className="size-4 rounded border-input"
+                />
+                <span>Approve user immediately (grant dashboard access)</span>
+              </label>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setCreateUserOpen(false)}
+              disabled={busy}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              disabled={busy || !createForm.email || createForm.password.length < 8}
+              onClick={handleCreateUser}
+            >
+              {busy ? (
+                <Loader2 className="size-4 animate-spin mr-1.5" aria-hidden="true" />
+              ) : null}
+              Create User Account
             </Button>
           </DialogFooter>
         </DialogContent>

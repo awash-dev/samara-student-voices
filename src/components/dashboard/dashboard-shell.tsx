@@ -218,7 +218,7 @@ export function DashboardShell({
 
       {/* Main App Inset */}
       <SidebarInset className="m-0! p-0! rounded-none! shadow-none! h-svh max-h-svh min-h-0 flex flex-col overflow-hidden bg-background">
-        {/* Top Header - Solid, zero leak, exact height */}
+        {/* Top Header */}
         <header className="h-14 sm:h-16 shrink-0 flex items-center gap-2 sm:gap-3 border-b border-border/70 bg-background px-3 sm:px-6 z-20">
           <SidebarTrigger
             type="button"
@@ -270,14 +270,19 @@ export function DashboardShell({
             fullBleed
               ? cn(
                 "overflow-hidden",
-                hideMobileNav ? "pb-0" : "pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-0"
+                hideMobileNav ? "pb-0" : "pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-0"
               )
-              : "overflow-y-auto overscroll-contain scroll-pb-24 p-3 pb-[calc(7rem+env(safe-area-inset-bottom))] sm:p-6 md:pb-24"
+              : "overflow-y-auto overscroll-contain p-3 sm:px-6 sm:pt-6 pb-32 sm:pb-36 md:pb-24 scroll-pb-32"
           )}
         >
           {/* Subtle ambient light mesh */}
           <div className="pointer-events-none absolute -top-12 right-0 -z-10 h-72 w-72 rounded-full bg-primary/5 blur-3xl" />
           {children}
+
+          {/* Bottom clearance spacer to guarantee content is never cut off by mobile nav or viewport bottom */}
+          {!fullBleed && (
+            <div className="h-16 w-full shrink-0 md:h-10" aria-hidden="true" />
+          )}
         </div>
 
         {!hideMobileNav && (

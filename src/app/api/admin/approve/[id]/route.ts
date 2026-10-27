@@ -4,6 +4,7 @@ import { users } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { notifyAccountApproved } from '@/lib/email/notify'
 import { requireRole } from '@/lib/api/guards'
+import { clearSessionCache } from '@/lib/session'
 
 export async function PATCH(
   _request: NextRequest,
@@ -30,6 +31,9 @@ export async function PATCH(
     if (!updated) {
       return Response.json({ error: 'User not found' }, { status: 404 })
     }
+
+    // Invalidate in-memory session caches immediately so the user can access their dashboard instantly
+    clearSessionCache()
 
     void notifyAccountApproved({
       email: updated.email,

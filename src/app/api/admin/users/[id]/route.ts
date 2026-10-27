@@ -7,6 +7,7 @@ import {
 } from "@/lib/auth/neon-user"
 import { db } from "@/lib/db"
 import { users } from "@/lib/db/schema"
+import { clearSessionCache } from "@/lib/session"
 
 export async function PATCH(
   request: Request,
@@ -29,7 +30,7 @@ export async function PATCH(
     const updates: Partial<{
       name: string | null
       email: string
-      role: "student" | "executive" | "admin"
+      role: "student" | "executive" | "admin" | "superadmin"
       approved: boolean
     }> = {}
 
@@ -37,8 +38,8 @@ export async function PATCH(
     if (typeof body.email === "string") updates.email = body.email.trim().toLowerCase()
     if (body.role === "student" || body.role === "executive") {
       updates.role = body.role
-    } else if (body.role === "admin" && session.role === "superadmin") {
-      updates.role = "admin"
+    } else if ((body.role === "admin" || body.role === "superadmin") && session.role === "superadmin") {
+      updates.role = body.role
     }
     if (typeof body.approved === "boolean") updates.approved = body.approved
 
@@ -55,6 +56,9 @@ export async function PATCH(
     if (!updated) {
       return Response.json({ error: "User not found" }, { status: 404 })
     }
+
+    // Invalidate session cache immediately
+    clearSessionCache()
 
     return Response.json(updated)
   } catch (error) {
@@ -117,6 +121,8 @@ export async function DELETE(
     }
 
     await db.delete(users).where(eq(users.id, id))
+
+    clearSessionCache()
 
     return Response.json({ success: true })
   } catch (error) {
