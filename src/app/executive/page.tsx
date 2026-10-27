@@ -2,6 +2,8 @@ import { redirect } from 'next/navigation'
 import { getSessionUser } from '@/lib/session'
 import { ExecutiveDashboardClient } from './client'
 
+export const dynamic = 'force-dynamic'
+
 export default async function ExecutiveDashboardPage() {
   const user = await getSessionUser()
 

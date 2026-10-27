@@ -6,6 +6,8 @@ import { SignUpForm } from "@/components/auth/sign-up-form"
 import { Skeleton } from "@/components/ui/skeleton"
 import { redirectIfAuthenticated } from "@/lib/auth/redirect-if-authenticated"
 
+export const dynamic = "force-dynamic"
+
 export const metadata: Metadata = {
   title: "Register Safe Student Account — Samara Student Voices",
   description:

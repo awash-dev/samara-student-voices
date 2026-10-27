@@ -2,6 +2,8 @@ import { redirect } from 'next/navigation'
 import { getSessionUser } from '@/lib/session'
 import { StudentDashboardClient } from './client'
 
+export const dynamic = 'force-dynamic'
+
 export default async function StudentDashboardPage() {
   const user = await getSessionUser()
 

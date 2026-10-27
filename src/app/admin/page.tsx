@@ -2,6 +2,8 @@ import { redirect } from 'next/navigation'
 import { getSessionUser } from '@/lib/session'
 import { AdminDashboardClient } from './client'
 
+export const dynamic = 'force-dynamic'
+
 export default async function AdminDashboardPage() {
   const user = await getSessionUser()
 

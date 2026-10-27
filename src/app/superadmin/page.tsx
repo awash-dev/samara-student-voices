@@ -2,6 +2,8 @@ import { redirect } from 'next/navigation'
 import { getSessionUser } from '@/lib/session'
 import { SuperadminDashboardClient } from './client'
 
+export const dynamic = 'force-dynamic'
+
 export default async function SuperadminDashboardPage() {
   const user = await getSessionUser()
 

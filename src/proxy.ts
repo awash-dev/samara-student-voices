@@ -20,7 +20,7 @@ const authMiddleware = auth.middleware({
   loginUrl: '/auth/sign-in',
 })
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl
 
   // 0. Neon Auth OAuth verifier exchange:
@@ -34,7 +34,7 @@ export async function middleware(request: NextRequest) {
         return authResponse
       }
     } catch (err) {
-      console.error('Neon Auth OAuth verifier exchange error in middleware:', err)
+      console.error('Neon Auth OAuth verifier exchange error in proxy:', err)
     }
   }
 
@@ -114,8 +114,12 @@ export async function middleware(request: NextRequest) {
   return NextResponse.next()
 }
 
+export const middleware = proxy
+export default proxy
+
 export const config = {
   matcher: [
     '/((?!_next/static|_next/image|favicon.ico|public/).*)',
   ],
 }
+

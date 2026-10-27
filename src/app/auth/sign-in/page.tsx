@@ -7,6 +7,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { redirectIfAuthenticated } from "@/lib/auth/redirect-if-authenticated"
 import { SITE } from "@/lib/marketing/content"
 
+export const dynamic = "force-dynamic"
+
 export const metadata: Metadata = {
   title: "Sign In — Samara Student Voices",
   description: "Sign in to your Samara University student or executive account.",
