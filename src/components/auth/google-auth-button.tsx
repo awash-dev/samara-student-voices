@@ -19,8 +19,8 @@ type GoogleAuthButtonProps = {
 
 function getCallbackUrls() {
   return {
-    callbackURL: "/auth/callback",
-    errorCallbackURL: "/auth/sign-in?error=google",
+    callbackURL: `${typeof window !== "undefined" && window.location.origin ? window.location.origin : (process.env.NEXT_PUBLIC_APP_URL || "https://samara-student-voices.vercel.app")}/auth/callback`,
+    errorCallbackURL: `${typeof window !== "undefined" && window.location.origin ? window.location.origin : (process.env.NEXT_PUBLIC_APP_URL || "https://samara-student-voices.vercel.app")}/auth/sign-in?error=google`,
   }
 }
 
